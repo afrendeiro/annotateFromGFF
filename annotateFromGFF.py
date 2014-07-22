@@ -39,9 +39,9 @@ def main():
     parser.add_argument('--operonDistance', type = int, dest = 'operonDist',
         help = "Distance to consider genes as belonging to same operon.", default = 100)
     parser.add_argument('-l', '--logfile', default = "log.txt", dest = 'logFile',
-        help = 'Specify the name of the output file. If not specified, will output to stdout.')
+        help = 'Specify the name of the log file.')
     parser.add_argument('-s', '--silent', action = 'store_true', dest = 'silent',
-        help = "Silent behaviour. Don't make log file", default = False)
+        help = "Silent behaviour. Don't make log file.", default = False)
     # parse
     args = parser.parse_args()
 
@@ -125,6 +125,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                     strand = str(row[6])
                     gene = re.search('GSOIDG\w+', str(row[8])).group(0)
 
+                    # check if same chromossome as before
                     if (prev_chrm == chrm) and (prev_chrm != ""):
                         if trigger:
                             if strand == "+":
@@ -370,7 +371,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                         output.append([chrm, start, end, cur_loc, gene])
 
                     # annotate 3'
-                    elif (strand == "-" and prev_loc == "Intergenic") or (strand == "+" and (prev_loc == "CDS")):
+                    elif (strand == "-" and (prev_loc == "Intergenic" or prev_loc == "3'UTR")) or (strand == "+" and (prev_loc == "CDS")):
                         cur_loc = "3'UTR"
                         output.append([chrm, start, end, cur_loc, gene])
 

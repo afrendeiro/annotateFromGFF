@@ -23,7 +23,9 @@ chrmFile - Tab-delimited file with sizes of each chromossome (chr:size).
 
 `-p`, `--promoterSize` - Average size of promoter elements. Dynamically resizable.
 
-`-v` - Print debugging information
+`l`, `--logfile` - Specify the name of the log file.
+
+`-s` - Silent behaviour. Don't make log file.
 
 # Promoter annotation
 Promoters are defined as a region upstream of transcription start sites (TSSs) by a fixed length (-p argument) but are resized to less if that distance would overlap a chromossome boundary or other gene.
