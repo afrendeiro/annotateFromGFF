@@ -144,7 +144,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     cur_loc = "Intergenic"
                                     istart = prev_end + 1 + promSize + 1
                                     iend = start - 1 - promSize - 1
-                                    output.append([chrm, istart, iend, cur_loc])
+                                    output.append([chrm, istart, iend, cur_loc, "."])
                                     # New gene promoter
                                     istart = start - 1 - promSize - 1
                                     iend = start - 1
@@ -169,7 +169,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     cur_loc = "Intergenic"
                                     istart = prev_end + 1 + promSize + 1
                                     iend = start - 1 - promSize - 1
-                                    output.append([chrm, istart, iend, cur_loc])
+                                    output.append([chrm, istart, iend, cur_loc, "."])
                                     # New gene promoter
                                     istart = start - 1 - promSize - 1
                                     iend = start - 1
@@ -202,7 +202,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                             cur_loc = "Intergenic"
                                             istart = prev_end + 1 + promSize + 1
                                             iend = start - 1
-                                            output.append([prev_chrm, istart, iend, cur_loc])
+                                            output.append([prev_chrm, istart, iend, cur_loc, "."])
                                                                                   
                                         else:
                                             # there's not enough space, add remaining until next gene
@@ -223,7 +223,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         cur_loc = "Intergenic"
                                         istart = prev_end + 1
                                         iend = start - 1
-                                        output.append([prev_chrm, istart, iend, cur_loc])
+                                        output.append([prev_chrm, istart, iend, cur_loc, "."])
                                 else:
                                     # test if there's space for promoter of the last gene
                                     if prev_end + 1 + promSize < start:
@@ -240,7 +240,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         cur_loc = "Intergenic"
                                         istart = prev_end + 1 + promSize + 1
                                         iend = start - 1
-                                        output.append([prev_chrm, istart, iend, cur_loc])
+                                        output.append([prev_chrm, istart, iend, cur_loc, "."])
                                                                               
                                     else:
                                         # there's not enough space, add remaining until next gene
@@ -270,7 +270,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                             cur_loc = "Intergenic"
                                             istart = prev_end + 1
                                             iend = start - 1 - promSize
-                                            output.append([chrm, istart, iend, cur_loc])
+                                            output.append([chrm, istart, iend, cur_loc, "."])
                                             # promoter of last
                                             istart = start - 1 - promSize
                                             iend = start - 1
@@ -299,7 +299,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         cur_loc = "Intergenic"
                                         istart = prev_end + 1
                                         iend = start - 1
-                                        output.append([prev_chrm, istart, iend, cur_loc])
+                                        output.append([prev_chrm, istart, iend, cur_loc, "."])
                                     
                                 trigger = False
                             else:
@@ -308,7 +308,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 cur_loc = "Intergenic"
                                 istart = prev_end + 1
                                 iend = start - 1
-                                output.append([prev_chrm, istart, iend, cur_loc])
+                                output.append([prev_chrm, istart, iend, cur_loc, "."])
                                 
                                 trigger = True                                  
                     else:
@@ -329,7 +329,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     cur_loc = "Intergenic"
                                     istart = prev_end + 1 + promSize
                                     iend = chrmSizes[prev_chrm]
-                                    output.append([prev_chrm, istart, iend, cur_loc])
+                                    output.append([prev_chrm, istart, iend, cur_loc, "."])
                                 else:
                                     # if not fill rest of chromossome with promoter
                                     # TSS of last gene
@@ -347,7 +347,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 cur_loc = "Intergenic"
                                 istart = prev_end + 1
                                 iend = chrmSizes[prev_chrm]
-                                output.append([prev_chrm, istart, iend, cur_loc])
+                                output.append([prev_chrm, istart, iend, cur_loc, "."])
                         
                         # operate on new chromossome
                         if strand == "+":
@@ -358,7 +358,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 cur_loc = "Intergenic"
                                 istart = 1
                                 iend = start - 1 - promSize
-                                output.append([chrm, istart, iend, cur_loc])
+                                output.append([chrm, istart, iend, cur_loc, "."])
                                 # add promoter
                                 if start > 2:
                                     # avoid going beyond genome boundaries
@@ -388,7 +388,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                             cur_loc = "Intergenic"
                             istart = 1
                             iend = start - 1
-                            output.append([chrm, istart, iend, cur_loc])
+                            output.append([chrm, istart, iend, cur_loc, "."])
                             trigger = True
                             
                         
