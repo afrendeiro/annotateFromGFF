@@ -4,7 +4,7 @@ annotateFromGFF.py
 
 Creates functional annotation of complete genome based on features on GFF file.
 Reports coding-sequence (CDS) and untranslated-regions (UTR) and extracts 
-features such as introns, intergenic space and promoters. It also distinguishes
+features such as introns, intergenic space, TSSs and promoters. It also distinguishes
 between 5' and 3' UTRs.
 Promoters and intergenic space are annotated dynamically based on a specified
 promoter size but rezisable to fit genome boundaries and small intergenic space.
@@ -34,10 +34,10 @@ def main():
         help = 'Specify the name of the output file. If not specified, will output to stdout.')
     parser.add_argument('-p', '--promoterSize', type = int, dest = 'promSize', default = 300,
         help = 'Average size of promoter elements. Dynamically resizable.')
-    parser.add_argument('-op', '--operons', action = 'store_true', dest = 'operons',
-        help = "Consider operons.", default = False)
+    parser.add_argument('-op', '--operons', action = 'store_false', dest = 'operons',
+        help = "Consider operons.", default = True) # default is "true for storing false" meaning off
     parser.add_argument('--operonDistance', type = int, dest = 'operonDist',
-        help = "Distance to consider genes as belonging to same operon.", default = 100)
+        help = "Distance to consider genes as belonging to same operon.", default = 60)
     parser.add_argument('-l', '--logfile', default = "log.txt", dest = 'logFile',
         help = 'Specify the name of the log file.')
     parser.add_argument('-s', '--silent', action = 'store_true', dest = 'silent',
@@ -182,66 +182,124 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 trigger = False
                             else:
                                 # two genes in neg position
-                                # test if there's space for promoter of the last gene
-                                if prev_end + 1 + promSize < start:
-                                    # there's enough space
-                                    # TSS of last gene
-                                    cur_loc = "TSS"
-                                    output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
-                                    # promoter of last gene
-                                    istart = prev_end + 1
-                                    iend = prev_end + 1 + promSize
-                                    cur_loc = "Promoter"
-                                    output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
-                                    # add intergenic space following
-                                    cur_loc = "Intergenic"
-                                    istart = prev_end + 1 + promSize + 1
-                                    iend = start - 1
-                                    output.append([prev_chrm, istart, iend, cur_loc])
-                                                                          
+
+                                if operons:
+                                    # test if in operon
+                                    if prev_end + operonDist > start:
+                                        # not operon
+                                        # test if there's space for promoter of the last gene
+                                        if prev_end + 1 + promSize < start:
+                                            # there's enough space
+                                            # TSS of last gene
+                                            cur_loc = "TSS"
+                                            output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
+                                            # promoter of last gene
+                                            istart = prev_end + 1
+                                            iend = prev_end + 1 + promSize
+                                            cur_loc = "Promoter"
+                                            output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
+                                            # add intergenic space following
+                                            cur_loc = "Intergenic"
+                                            istart = prev_end + 1 + promSize + 1
+                                            iend = start - 1
+                                            output.append([prev_chrm, istart, iend, cur_loc])
+                                                                                  
+                                        else:
+                                            # there's not enough space, add remaining until next gene
+                                            # TSS of last gene
+                                            cur_loc = "TSS"
+                                            output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
+                                            # promoter of last gene
+                                            istart = prev_end + 1
+                                            iend = start - 1
+                                            cur_loc = "Promoter"
+                                            output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
+                                            # skip intergenic space
+                                    else:
+                                        # in operon
+                                        # last promoter skipped
+                                        # last TSS skipped
+                                        # fill with intergenic space
+                                        cur_loc = "Intergenic"
+                                        istart = prev_end + 1
+                                        iend = start - 1
+                                        output.append([prev_chrm, istart, iend, cur_loc])
                                 else:
-                                    # there's not enough space, add remaining until next gene
-                                    # TSS of last gene
-                                    cur_loc = "TSS"
-                                    output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
-                                    # promoter of last gene
-                                    istart = prev_end + 1
-                                    iend = start - 1
-                                    cur_loc = "Promoter"
-                                    output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
-                                    # skip intergenic space
-                                    
+                                    # test if there's space for promoter of the last gene
+                                    if prev_end + 1 + promSize < start:
+                                        # there's enough space
+                                        # TSS of last gene
+                                        cur_loc = "TSS"
+                                        output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
+                                        # promoter of last gene
+                                        istart = prev_end + 1
+                                        iend = prev_end + 1 + promSize
+                                        cur_loc = "Promoter"
+                                        output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
+                                        # add intergenic space following
+                                        cur_loc = "Intergenic"
+                                        istart = prev_end + 1 + promSize + 1
+                                        iend = start - 1
+                                        output.append([prev_chrm, istart, iend, cur_loc])
+                                                                              
+                                    else:
+                                        # there's not enough space, add remaining until next gene
+                                        # TSS of last gene
+                                        cur_loc = "TSS"
+                                        output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
+                                        # promoter of last gene
+                                        istart = prev_end + 1
+                                        iend = start - 1
+                                        cur_loc = "Promoter"
+                                        output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
+                                        # skip intergenic space
+
                                 trigger = True
                         else:
                             # no trigger
                             if strand == "+":
                                 # two positive genes situation
-                                # test if there's space for promoter
-                                if start - 1 - promSize > prev_end:
-                                    # add intergenic
-                                    cur_loc = "Intergenic"
-                                    istart = prev_end + 1
-                                    iend = start - 1 - promSize
-                                    output.append([chrm, istart, iend, cur_loc])
-                                    # promoter of last
-                                    istart = start - 1 - promSize
-                                    iend = start - 1
-                                    cur_loc = "Promoter"
-                                    output.append([chrm, istart, iend, cur_loc, gene])
-                                    # TSS of current gene
-                                    cur_loc = "TSS"
-                                    output.append([prev_chrm, start, start + 1, cur_loc, gene])
-                                    
+                                
+                                if operons:
+                                    # test if in operon
+                                    if prev_end + operonDist > start:
+                                        # not operon
+                                        # test if there's space for promoter
+                                        if start - 1 - promSize > prev_end:
+                                            # add intergenic
+                                            cur_loc = "Intergenic"
+                                            istart = prev_end + 1
+                                            iend = start - 1 - promSize
+                                            output.append([chrm, istart, iend, cur_loc])
+                                            # promoter of last
+                                            istart = start - 1 - promSize
+                                            iend = start - 1
+                                            cur_loc = "Promoter"
+                                            output.append([chrm, istart, iend, cur_loc, gene])
+                                            # TSS of current gene
+                                            cur_loc = "TSS"
+                                            output.append([prev_chrm, start, start + 1, cur_loc, gene])
+                                            
+                                        else:
+                                            # if there's not enough space, fill space with promoter
+                                            # skip intergenic space
+                                            istart = prev_end + 1
+                                            iend = start - 1
+                                            cur_loc = "Promoter"
+                                            output.append([chrm, istart, iend, cur_loc, gene])
+                                            # TSS of current gene
+                                            cur_loc = "TSS"
+                                            output.append([prev_chrm, start, start + 1, cur_loc, gene])
+
                                 else:
-                                    # if there's not enough space, fill space with promoter
-                                    # skip intergenic space
-                                    istart = prev_end + 1
-                                    iend = start - 1
-                                    cur_loc = "Promoter"
-                                    output.append([chrm, istart, iend, cur_loc, gene])
-                                    # TSS of current gene
-                                    cur_loc = "TSS"
-                                    output.append([prev_chrm, start, start + 1, cur_loc, gene])
+                                    # in operon
+                                        # fill with intergenic space 
+                                        # skip promoter
+                                        # skip TSS
+                                        cur_loc = "Intergenic"
+                                        istart = prev_end + 1
+                                        iend = start - 1
+                                        output.append([prev_chrm, istart, iend, cur_loc])
                                     
                                 trigger = False
                             else:
