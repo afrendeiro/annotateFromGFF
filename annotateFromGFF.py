@@ -11,9 +11,16 @@ promoter size but rezisable to fit genome boundaries and small intergenic space.
 
 Andre F. Rendeiro (andre.rendeiro@mail.com) 2014
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 3 as
-published by the Free Software Foundation.
+annotateFromGFF.py is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+The full text of the GNU General Public License, version 3, can be found here:
+http://www.gnu.org/licenses/gpl-3.0-standalone.html
 """
 
 import sys, logging, csv, re
@@ -109,6 +116,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
             prev_end = 0
             cur_line = ""
             trigger = False
+            
 
             output = []
 
@@ -530,7 +538,7 @@ def writeOutput(output, outFile):
             # write to stdout
             if not s:
                 logger.info("Writing output to stdout.")
-            wr = csv.writer(sys.stdout, delimiter = '\t')
+            wr = csv.writer(sys.stdout, delimiter = '\t', lineterminator='\n')
             for line in output:
                 wr.writerow(line)
     except IOError:
