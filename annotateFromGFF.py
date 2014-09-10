@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 annotateFromGFF.py
 
@@ -8,28 +9,26 @@ features such as introns, intergenic space, TSSs and promoters. It also distingu
 between 5' and 3' UTRs.
 Promoters and intergenic space are annotated dynamically based on a specified
 promoter size but rezisable to fit genome boundaries and small intergenic space.
-
-Andre F. Rendeiro (andre.rendeiro@mail.com) 2014
-
-annotateFromGFF.py is free software: you can redistribute it and/or modify it under the terms
-of the GNU General Public License as published by the Free Software Foundation,
-either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.
-
-The full text of the GNU General Public License, version 3, can be found here:
-http://www.gnu.org/licenses/gpl-3.0-standalone.html
 """
 
 import sys, logging, csv, re
 from argparse import ArgumentParser
 
+__author__ = "Andre Rendeiro"
+__copyright__ = "Copyright 2014, Andre F. Rendeiro"
+__credits__ = []
+__license__ = "GPL3"
+__version__ = "0.1"
+__maintainer__ = "Andre Rendeiro"
+__email__ = "andre.rendeiro@mail.com"
+__status__ = "Production"
+
 def main():
     # argparser    
-    parser = ArgumentParser(description = 'functional annotation of complete genome based on features on GFF file.',
-        usage = 'python annotateFromGFF.py [OPTIONS] file.gff chrmSizes.tsv > annotation.bed')
+    parser = ArgumentParser(
+        description = 'Functional annotation of complete genome based on features on GFF file',
+        usage       = 'python annotateFromGFF.py [OPTIONS] file.gff chrmSizes.tsv > annotation.bed'
+        )
     # positional arguments
     parser.add_argument('gff',
         help = 'GFF file with annotation.')
@@ -72,7 +71,7 @@ def main():
 
     # Start working
     chrmSizes = getChrSizes(args.chrmFile)
-    output = parseGFF(args.gff, chrmSizes, args.promSize, args.operons, args.operonDist)
+    output    = parseGFF(args.gff, chrmSizes, args.promSize, args.operons, args.operonDist)
     writeOutput(output, args.outFile)
     if not s:
         logger.info("Finished run successfully.")
@@ -101,7 +100,6 @@ def getChrSizes(chrmFile):
 def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
     """
     Parses GFF file and annotates genomic features.
-    Promoters 
     Outputs list of lists with annotation for each feature.
     """
     if not s:
@@ -113,9 +111,9 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
 
             prev_line = ""
             prev_chrm = ""
-            prev_end = 0
-            cur_line = ""
-            trigger = False
+            prev_end  = 0
+            cur_line  = ""
+            trigger   = False
             
 
             output = []
@@ -124,15 +122,15 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
 
             for row in reader:
 
-                chrm = str(row[0])
-                start = int(row[3])
-                end = int(row[4])
+                chrm     = str(row[0])
+                start    = int(row[3])
+                end      = int(row[4])
                 cur_line = str(row[2])
 
                 # start parsing gff
                 if cur_line == "gene":
                     strand = str(row[6])
-                    gene = re.search('GSOIDG\w+', str(row[8])).group(0)
+                    gene   = re.search('GSOIDG\w+', str(row[8])).group(0)
 
                     # check if same chromossome as before
                     if (prev_chrm == chrm) and (prev_chrm != ""):
@@ -145,18 +143,18 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     cur_loc = "TSS"
                                     output.append([prev_chrm, prev_end, prev_end + 1, cur_loc, prev_gene])
                                     # promoter of last gene
-                                    istart = prev_end + 1
-                                    iend = prev_end + 1 + promSize
+                                    istart  = prev_end + 1
+                                    iend    = prev_end + 1 + promSize
                                     cur_loc = "Promoter"
                                     output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                     # intergenic space
                                     cur_loc = "Intergenic"
-                                    istart = prev_end + 1 + promSize + 1
-                                    iend = start - 1 - promSize - 1
+                                    istart  = prev_end + 1 + promSize + 1
+                                    iend    = start - 1 - promSize - 1
                                     output.append([chrm, istart, iend, cur_loc, "."])
                                     # New gene promoter
-                                    istart = start - 1 - promSize - 1
-                                    iend = start - 1
+                                    istart  = start - 1 - promSize - 1
+                                    iend    = start - 1
                                     cur_loc = "Promoter"
                                     output.append([chrm, istart, iend, cur_loc, gene])
                                     # TSS of current gene
@@ -170,14 +168,14 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     cur_loc = "TSS"
                                     output.append([prev_chrm, prev_end, prev_end + 1, cur_loc, prev_gene])
                                     # promoter of last gene
-                                    istart = prev_end + 1
-                                    iend = prev_end + 1 + promSize
+                                    istart  = prev_end + 1
+                                    iend    = prev_end + 1 + promSize
                                     cur_loc = "Promoter"
                                     output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                     # skip intergenic space
                                     # New gene promoter
-                                    istart = start - 1 - promSize - 1
-                                    iend = start - 1
+                                    istart  = start - 1 - promSize - 1
+                                    iend    = start - 1
                                     cur_loc = "Promoter"
                                     output.append([chrm, istart, iend, cur_loc, gene])
                                     # TSS of current gene
@@ -199,14 +197,14 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                             cur_loc = "TSS"
                                             output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
                                             # promoter of last gene
-                                            istart = prev_end + 1
-                                            iend = prev_end + 1 + promSize
+                                            istart  = prev_end + 1
+                                            iend    = prev_end + 1 + promSize
                                             cur_loc = "Promoter"
                                             output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                             # add intergenic space following
                                             cur_loc = "Intergenic"
-                                            istart = prev_end + 1 + promSize + 1
-                                            iend = start - 1
+                                            istart  = prev_end + 1 + promSize + 1
+                                            iend    = start - 1
                                             output.append([prev_chrm, istart, iend, cur_loc, "."])
                                                                                   
                                         else:
@@ -215,8 +213,8 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                             cur_loc = "TSS"
                                             output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
                                             # promoter of last gene
-                                            istart = prev_end + 1
-                                            iend = start - 1
+                                            istart  = prev_end + 1
+                                            iend    = start - 1
                                             cur_loc = "Promoter"
                                             output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                             # skip intergenic space
@@ -226,7 +224,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         # last TSS skipped
                                         # fill with intergenic space
                                         cur_loc = "Intergenic"
-                                        istart = prev_end + 1
+                                        istart  = prev_end + 1
                                         # prevent start > end
                                         if prev_end + 1 < start - 1:
                                             iend = start - 1
@@ -242,14 +240,14 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         cur_loc = "TSS"
                                         output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
                                         # promoter of last gene
-                                        istart = prev_end + 1
-                                        iend = prev_end + 1 + promSize
+                                        istart  = prev_end + 1
+                                        iend    = prev_end + 1 + promSize
                                         cur_loc = "Promoter"
                                         output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                         # add intergenic space following
                                         cur_loc = "Intergenic"
-                                        istart = prev_end + 1 + promSize + 1
-                                        iend = start - 1
+                                        istart  = prev_end + 1 + promSize + 1
+                                        iend    = start - 1
                                         output.append([prev_chrm, istart, iend, cur_loc, "."])
                                                                               
                                     else:
@@ -260,8 +258,8 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         output.append([prev_chrm, prev_end - 1, prev_end, cur_loc, prev_gene])
                                         if prev_end + 2 <= start:
                                             # promoter of last gene
-                                            istart = prev_end + 1
-                                            iend = start - 1
+                                            istart  = prev_end + 1
+                                            iend    = start - 1
                                             cur_loc = "Promoter"
                                             output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                         # skip intergenic space
@@ -280,12 +278,12 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         if start - 1 - promSize - 1 > prev_end: # added 1 more to prevent 0bp intergenic spc
                                             # add intergenic
                                             cur_loc = "Intergenic"
-                                            istart = prev_end + 1
-                                            iend = start - 1 - promSize
+                                            istart  = prev_end + 1
+                                            iend    = start - 1 - promSize
                                             output.append([chrm, istart, iend, cur_loc, "."])
                                             # promoter of last
-                                            istart = start - 1 - promSize
-                                            iend = start - 1
+                                            istart  = start - 1 - promSize
+                                            iend    = start - 1
                                             cur_loc = "Promoter"
                                             output.append([chrm, istart, iend, cur_loc, gene])
                                             # TSS of current gene
@@ -313,7 +311,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                         # skip promoter
                                         # skip TSS
                                         cur_loc = "Intergenic"
-                                        istart = prev_end + 1
+                                        istart  = prev_end + 1
                                         # prevent start > end
                                         if prev_end + 1 < start - 1:
                                             iend = start - 1
@@ -326,12 +324,12 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     if start - 1 - promSize - 1 > prev_end: # added 1 more to prevent 0bp intergenic spc
                                         # add intergenic
                                         cur_loc = "Intergenic"
-                                        istart = prev_end + 1
-                                        iend = start - 1 - promSize
+                                        istart  = prev_end + 1
+                                        iend    = start - 1 - promSize
                                         output.append([chrm, istart, iend, cur_loc, "."])
                                         # promoter of last
-                                        istart = start - 1 - promSize
-                                        iend = start - 1
+                                        istart  = start - 1 - promSize
+                                        iend    = start - 1
                                         cur_loc = "Promoter"
                                         output.append([chrm, istart, iend, cur_loc, gene])
                                         # TSS of current gene
@@ -358,7 +356,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 # two gene endings situation
                                 # fill with intergenic space
                                 cur_loc = "Intergenic"
-                                istart = prev_end + 1
+                                istart  = prev_end + 1
                                 # prevent start > end
                                 if prev_end + 1 < start - 1:
                                     iend = start - 1
@@ -378,15 +376,15 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     output.append([prev_chrm, prev_end, prev_end + 1, cur_loc, prev_gene])
                                     # promoter of last gene
                                     cur_loc = "Promoter"
-                                    istart = prev_end + 1
-                                    iend = prev_end + 1 + promSize
+                                    istart  = prev_end + 1
+                                    iend    = prev_end + 1 + promSize
                                     output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                                     # add intergenic until end of chr
                                     cur_loc = "Intergenic"
                                     if prev_end + 1 < chrmSizes[prev_chrm]:
                                         # avoid going beyond genome boundaries
                                         istart = prev_end + 1 + promSize
-                                        iend = chrmSizes[prev_chrm]
+                                        iend   = chrmSizes[prev_chrm]
                                         output.append([prev_chrm, istart, iend, cur_loc, "."])
                                 else:
                                     # if not fill rest of chromossome with promoter
@@ -398,7 +396,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                     if prev_end + 1 < chrmSizes[prev_chrm]:
                                         # avoid going beyond genome boundaries
                                         istart = prev_end + 1
-                                        iend = chrmSizes[prev_chrm]
+                                        iend   = chrmSizes[prev_chrm]
                                         output.append([prev_chrm, istart, iend, cur_loc, prev_gene])
                             else:
                                 # fill rest of last chromossome with intergenic
@@ -406,7 +404,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 if prev_end + 1 < chrmSizes[prev_chrm]:
                                     # avoid going beyond genome boundaries
                                     istart = prev_end + 1
-                                    iend = chrmSizes[prev_chrm]
+                                    iend   = chrmSizes[prev_chrm]
                                     output.append([prev_chrm, istart, iend, cur_loc, "."])
                         
                         # operate on new chromossome
@@ -418,15 +416,15 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 if start > 2:
                                 # avoid going beyond genome boundaries
                                     cur_loc = "Intergenic"
-                                    istart = 1
-                                    iend = start - 1 - promSize
+                                    istart  = 1
+                                    iend    = start - 1 - promSize
                                     output.append([chrm, istart, iend, cur_loc, "."])
                                 # add promoter
                                 if start > 2:
                                     # avoid going beyond genome boundaries
                                     cur_loc = "Promoter"
-                                    istart = start - 1 - promSize
-                                    iend = start - 1
+                                    istart  = start - 1 - promSize
+                                    iend    = start - 1
                                     output.append([chrm, istart, iend, cur_loc, gene])
                                 # TSS of current gene
                                 cur_loc = "TSS"
@@ -437,8 +435,8 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                                 if start > 2:
                                     # avoid going beyond genome boundaries
                                     cur_loc = "Promoter"
-                                    istart = 1
-                                    iend = start - 1 # make sure it's > 1                                    
+                                    istart  = 1
+                                    iend    = start - 1 # make sure it's > 1                                    
                                     output.append([chrm, istart, iend, cur_loc, gene])
                                 # TSS of current gene
                                 cur_loc = "TSS"
@@ -451,13 +449,13 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                             if start > 2:
                                 # avoid going beyond genome boundaries
                                 istart = 1
-                                iend = start - 1 # make sure it's > 1
+                                iend   = start - 1 # make sure it's > 1
                                 output.append([chrm, istart, iend, cur_loc, "."])
                             
                             trigger = True
                         
                     start = istart
-                    end = iend
+                    end   = iend
 
                 elif cur_line == "mRNA":
                     pass
@@ -467,7 +465,7 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                     if (prev_loc == "CDS" and prev_end + 1 != start) or ("UTR" in prev_loc and prev_end + 1 != start):
                         
                         cur_loc = "Intron"
-                        istart = prev_end + 1
+                        istart  = prev_end + 1
                         # make sure it has length >= 1
                         if start - 1 > istart:
                             iend = start - 1
@@ -483,8 +481,8 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
                     # annotate intron if two consecutive UTRs or CDS precedding UTR non-overlapping
                     if (prev_loc == "CDS" and prev_end + 1 != start) or ("UTR" in prev_loc and prev_end + 1 != start):
                         cur_loc = "Intron"
-                        istart = prev_end + 1
-                        iend = start - 1
+                        istart  = prev_end + 1
+                        iend    = start - 1
                         output.append([chrm, istart, iend, cur_loc, gene])
 
                     # annotate 5' UTR
@@ -501,8 +499,8 @@ def parseGFF(infile, chrmSizes, promSize, operons, operonDist):
 
                 prev_line = cur_line
                 prev_chrm = chrm
-                prev_end = end
-                prev_loc = cur_loc
+                prev_end  = end
+                prev_loc  = cur_loc
                 prev_gene = gene
 
         # Annotate chrsm without genes

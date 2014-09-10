@@ -295,3 +295,13 @@
 2014-07-26 15:39:29,786 - annotateFromGFF.py - INFO - Operon flag raised. Considering operons in annotation.
 2014-07-26 15:39:31,079 - annotateFromGFF.py - INFO - Writing output to 'examples/annotation.bed'.
 2014-07-26 15:39:31,850 - annotateFromGFF.py - INFO - Finished run successfully.
+2014-07-26 16:24:24,069 - annotateFromGFF.py - INFO - Parsing chromossome size file 'examples/chrmSizes.tsv' and creating dic.
+2014-07-26 16:24:24,074 - annotateFromGFF.py - INFO - Parsing gff file 'examples/file.gff3' and creating annotation.
+2014-07-26 16:24:24,074 - annotateFromGFF.py - INFO - Operon flag raised. Considering operons in annotation.
+2014-07-26 16:24:25,336 - annotateFromGFF.py - INFO - Writing output to 'examples/annotation.bed'.
+2014-07-26 16:24:25,980 - annotateFromGFF.py - INFO - Finished run successfully.
+2014-07-26 16:24:48,835 - annotateFromGFF.py - INFO - Parsing chromossome size file 'examples/chrmSizes.tsv' and creating dic.
+2014-07-26 16:24:48,838 - annotateFromGFF.py - INFO - Parsing gff file 'examples/file.gff3' and creating annotation.
+2014-07-26 16:24:48,838 - annotateFromGFF.py - INFO - Operon flag raised. Considering operons in annotation.
+2014-07-26 16:24:49,840 - annotateFromGFF.py - INFO - Writing output to stdout.
+2014-07-26 16:24:50,349 - annotateFromGFF.py - INFO - Finished run successfully.
